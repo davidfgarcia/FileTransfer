@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace FileTransferAssignment
 {
-    public static class GloballyAccessible_MockUp
+    public static class Supervisor
     {
         // region globally accessible fields
         public static Dictionary<int, Server> Servers { get; private set; }
@@ -13,7 +13,7 @@ namespace FileTransferAssignment
         private static Random _rnd;
         //
 
-        static GloballyAccessible_MockUp()
+        static Supervisor()
         {
             Servers = new Dictionary<int, Server>();
             _rnd = new Random();

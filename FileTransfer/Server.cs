@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FileTransferAssignment;
 
 public class Server
@@ -12,7 +13,7 @@ public class Server
     public Server(int serverId)
     {
         ServerId = serverId;
-        TransferSrvc = new TransferService(serverId);
+        TransferSrvc = new TransferService(serverId, this);
 
         _rnd = new Random();
         _timer = new System.Timers.Timer(Configuration.HEARTBEAT_FREQUENCY);
@@ -20,7 +21,7 @@ public class Server
         _timer.Start();
     }
 
-    private void OnTimeElapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    private async void OnTimeElapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
         if (_rnd.NextDouble() < .05) // ToDo: 5% chance of the server going offline
         {
@@ -29,7 +30,8 @@ public class Server
             Status = ServerStatus.Offline;
         }
 
-        TransferSrvc.Refresh();
+        // refresh transfers status
+        await TransferSrvc.Refresh();
     }
 
     public void Start()
@@ -48,21 +50,6 @@ public class Server
     public async void StartAsync()
     {
         await Task.Run(() => Start());
-
-        /*
-        if (!Initialize())
-        {
-            return false;
-        }
-
-        await Task.Run(() =>
-        {
-            Status = ServerStatus.Online;
-            SessionId = Guid.NewGuid();
-        });
-
-        return true;
-        */
     }
 
     public void ShutDown(bool intentional)
@@ -79,7 +66,6 @@ public class Server
     {
         // ToDo: initialize all tasks here that are private to this server instance/session
         return true;
-        //throw new NotImplementedException();
     }
 }
 
